@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR Strategy Master - Communicatiestrategie Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .game-rules {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .game-rules h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .game-rules ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .game-rules li {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Game Screen */
+        .progress-bar {
+            background: #e0e7ff;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .case-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 4em;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .case-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+
+        .case-image-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .case-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .case-description {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            color: #333;
+            border-left: 5px solid #667eea;
+        }
+
+        .question {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background: #f9fafb;
+            border: 2px solid #e0e7ff;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            font-size: 1.05em;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+
+        .feedback h4 {
+            margin-bottom: 10px;
+        }
+
+        .next-question-container {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .next-question-container.show {
+            display: block;
+        }
+
+        /* End Screen */
+        .end-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: 700;
+            margin: 30px 0;
+        }
+
+        .score-message {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .emoji-celebration {
+            font-size: 5em;
+            animation: bounce 0.6s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .score-breakdown {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .score-breakdown p {
+            color: #555;
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+
+        .strategy-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .stats-counter {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .case-image {
+                height: 200px;
+            }
+
+            .case-title {
+                font-size: 1.5em;
+            }
+
+            .question {
+                font-size: 1.1em;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 PR Strategy Master</h1>
+            <p>Worden jij de communicatiestrategie expert van morgen?</p>
+        </div>
+
+        <div class="content">
+            <!-- Start Screen -->
+            <div class="screen active" id="startScreen">
+                <div class="start-screen">
+                    <h2>Welkom, PR-strategie expert!</h2>
+                    <p>In deze game kom je te staan voor echte communicatiechallenges. Jij moet de juiste communicatiestrategieën kiezen om problemen op te lossen en doelstellingen te bereiken.</p>
+                    
+                    <div class="game-rules">
+                        <h3>📋 Hoe speelt dit spel?</h3>
+                        <ul>
+                            <li><strong>Je krijgt 12 cases:</strong> Elk geval is gebaseerd op echte PR-situaties</li>
+                            <li><strong>Kies de juiste strategie:</strong> Welke van de 12 strategieën van Wil Michels past het beste?</li>
+                            <li><strong>Vervolg-vraag:</strong> Welk communicatiemiddel zou je gebruiken?</li>
+                            <li><strong>Stijgende moeilijkheid:</strong> Het begint makkelijk, maar wordt steeds uitdagender!</li>
+                            <li><strong>Feedback:</strong> Na elke vraag zie je of je goed zat</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 30px 0;">
+                        <p style="color: #667eea; font-weight: 600; margin-bottom: 20px;">⏱️ Geschatte speelduur: 15-20 minuten</p>
+                    </div>
+
+                    <button class="btn" onclick="startGame()">🚀 Start de Game!</button>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="screen" id="gameScreen">
+                <div class="stats-counter">
+                    Case <span id="caseNumber">1</span> van <span id="totalCases">12</span> | Score: <span id="score">0</span> punten
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="case-image" id="caseImage">
+                    <div class="case-image-content">
+                        <div id="caseEmoji">📱</div>
+                        <div class="difficulty-badge" id="difficultyBadge">Gemakkelijk</div>
+                    </div>
+                </div>
+
+                <h2 class="case-title" id="caseTitle">Case Title</h2>
+
+                <div class="case-description" id="caseDescription">
+                    Case description here
+                </div>
+
+                <div id="questionContainer">
+                    <div class="question" id="question">Welke communicatiestrategie past het best?</div>
+                    <div class="options" id="optionsContainer"></div>
+                    <div class="feedback" id="feedback"></div>
+                    <div class="next-question-container" id="nextQuestionContainer">
+                        <button class="btn" onclick="nextStep()">Volgende vraag →</button>
+                    </div>
+                </div>
+
+                <div id="followUpContainer" style="display: none;">
+                    <div class="question" id="followUpQuestion">Welk communicatiemiddel zou je gebruiken?</div>
+                    <div class="options" id="followUpOptionsContainer"></div>
+                    <div class="feedback" id="followUpFeedback"></div>
+                    <div class="next-question-container" id="nextCaseContainer">
+                        <button class="btn" onclick="nextCase()">Volgende case →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End Screen -->
+            <div class="screen" id="endScreen">
+                <div class="end-screen">
+                    <div class="emoji-celebration">🎉</div>
+                    <h2>Gefeliciteerd!</h2>
+                    <div class="score-display" id="finalScore">0/12</div>
+                    
+                    <div class="score-message" id="scoreMessage">
+                        Fantastisch gedaan!
+                    </div>
+
+                    <div class="score-breakdown" id="scoreBreakdown">
+                        <p><strong>Totale score:</strong> <span id="totalScore">0</span>/24 punten</p>
+                        <p><strong>Gemiddelde:</strong> <span id="average">0</span>%</p>
+                        <p id="strategiesLearned"><strong>Strategieën geleerd:</strong> Alle 12!</p>
+                    </div>
+
+                    <div class="button-container">
+                        <button class="btn" onclick="resetGame()">🔄 Opnieuw spelen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cases = [
+            {
+                id: 1,
+                title: "TikTok Trend Fail 📱",
+                emoji: "📱",
+                difficulty: "Gemakkelijk",
+                description: "Je werkt voor een grote sportmerk dat probeerde viral te gaan met een TikTok-trend, maar de video kwam over als erg 'cringe' en oubollig. Jonge consumenten maken memes erover. Je moet het imago herstellen.",
+                strategyQuestion: "Welke communicatiestrategie is hier het meest geschikt?",
+                correctStrategy: "Reputatiestrategie",
+                wrongStrategies: ["Positioneringsstrategie", "Fanstrategie"],
+                strategyExplanation: "Je moet het beschadigde imago herstellen en het vertrouwen van je jonge doelgroep terugwinnen. Dit is het kernwerk van een reputatiestrategie.",
+                channelQuestion: "Welk communicatiemiddel zou je inzetten om het imago te herstellen?",
+                correctChannel: "Persconferentie met een sincere verklaring en apologie op social media",
+                wrongChannels: [
+                    "Een dure TV-commercial maken",
+                    "Het incident totaal negeren en hopen dat het voorbijgaat"
+                ]
+            },
+            {
+                id: 2,
+                title: "Nieuw Hotel, Waar Te Beginnen? 🏨",
+                emoji: "🏨",
+                difficulty: "Gemakkelijk",
+                description: "Een luxe hotel opent zijn deuren in een onbekend district. De naam van het hotel is volledig onbekend bij de doelgroep. Je moet duidelijk maken wat het hotel uniek maakt ten opzichte van competitors.",
+                strategyQuestion: "Wat is de eerste prioriteit?",
+                correctStrategy: "Positioneringsstrategie",
+                wrongStrategies: ["Familiestrategie", "Ambassadeurstrategie"],
+                strategyExplanation: "Je moet eerst een duidelijke positie in het hoofd van de doelgroep creëren. Waarom moeten mensen hier verblijven in plaats van bij een ander hotel? Dit is positionering.",
+                channelQuestion: "Hoe zou je de gasten een eerste indruk geven?",
+                correctChannel: "Website, advertenties en social media om de unieke sfeer te tonen",
+                wrongChannels: [
+                    "Direct word-of-mouth werven van klanten",
+                    "Alleen interne trainingen voor werknemers"
+                ]
+            },
+            {
+                id: 3,
+                title: "Demotivatie Onder Werknemers 😔",
+                emoji: "😔",
+                difficulty: "Gemakkelijk",
+                description: "Je werkt voor een retail-bedrijf. Er is veel personeelsverloop omdat medewerkers niet voelen dat ze onderdeel van het team zijn. De bedrijfscultuur is zwak en iedereen voelt zich een nummer.",
+                strategyQuestion: "Welke strategie zou het werknemerswelbevinden verbeteren?",
+                correctStrategy: "Familiestrategie",
+                wrongStrategies: ["Internal Branding Strategie", "Participatiestrategie"],
+                strategyExplanation: "Je moet eerst verbondenheid creëren en een sterk 'wij-gevoel'. Als medewerkers zich deel voelen van een familie, stijgt hun betrokkenheid en dalen ze niet af.",
+                channelQuestion: "Hoe creëer je dit 'wij-gevoel'?",
+                correctChannel: "Teambuilding-activiteiten, gezamenlijke bijeenkomsten en storytelling over de bedrijfswaarden",
+                wrongChannels: [
+                    "Meer salaris zonder persoonlijke aandacht",
+                    "Strenger management en controle"
+                ]
+            },
+            {
+                id: 4,
+                title: "Beroemde Gamers Versus Kleine Brand 🎮",
+                emoji: "🎮",
+                difficulty: "Medium",
+                description: "Je werkt voor een opkomend energiedrankje-merk. Je concurrenten hebben miljoenendbudgetten en grote advertenties. Jij moet op creatieve wijze in de spotlight komen zonder veel geld.",
+                strategyQuestion: "Wat is je beste aanvalsstrategie?",
+                correctStrategy: "Ambassadeurstrategie",
+                wrongStrategies: ["Fanstrategie", "Positioneringsstrategie"],
+                strategyExplanation: "Ambassadeurs (bekende gamers/content creators) zijn geloofwaardiger dan directe advertenties. Hun aanbevelingen bereiken jouw doelgroep organisch en genereren buzz.",
+                channelQuestion: "Via welke kanalen werk je met ambassadeurs samen?",
+                correctChannel: "Samenwerking met gaming-influencers op Twitch, YouTube en TikTok",
+                wrongChannels: [
+                    "Televisie-reclame kopen",
+                    "Een ambassadeur inhuren die zelf niet het product begrijpt"
+                ]
+            },
+            {
+                id: 5,
+                title: "Festival Pop-up Activatie 🎪",
+                emoji: "🎪",
+                difficulty: "Medium",
+                description: "Een modebedrijf wil jonge mensen bereiken op een groot festival. Ze willen niet gewoon reclame maken, maar jonge bezoekers iets echt laten ervaren en voelen.",
+                strategyQuestion: "Welke strategie speelt in op deze doelstelling?",
+                correctStrategy: "Brandactivatiestrategie",
+                wrongStrategies: ["Word-of-Mouthstrategie", "Internal Branding Strategie"],
+                strategyExplanation: "Brandactivatie draait om beleving. Mensen die je merk actief beleven, voelen positieve emoties en onthouden je veel beter.",
+                channelQuestion: "Hoe zou je deze activatie inrichten?",
+                correctChannel: "Pop-upwinkel met interactieve ervaringen, foto-momenten en gratis producten",
+                wrongChannels: [
+                    "Een informatiebalie waar medewerkers alleen uitleg geven",
+                    "Flyers uitdelen met korting"
+                ]
+            },
+            {
+                id: 6,
+                title: "Restaurant Groeit Door Mond-tot-Mond 👨‍🍳",
+                emoji: "👨‍🍳",
+                difficulty: "Medium",
+                description: "Een klein restaurant heeft een groeiend aantal tevreden gasten. Dit restaurant heeft geen groot marketing-budget, maar het loopt goed omdat klanten het aanraden. Hoe zorg je dat dit momentum aanhoudt?",
+                strategyQuestion: "Welke strategie ondersteunt deze natuurlijke groei?",
+                correctStrategy: "Word-of-Mouthstrategie",
+                wrongStrategies: ["Positioneringsstrategie", "Participatiestrategie"],
+                strategyExplanation: "Mond-tot-mondreclame is goud waard. Tevreden klanten zijn de beste verkopers. Je moet dit effect versterken, niet ondergraven.",
+                channelQuestion: "Hoe verster je deze word-of-mouth?",
+                correctChannel: "Google Reviews aanmoedigen, foto's delen op Instagram van tevreden gasten, loyaliteitsprogramma",
+                wrongChannels: [
+                    "Dure televisiereclame die het authentieke imago bedreigt",
+                    "Agressieve discountcampagnes"
+                ]
+            },
+            {
+                id: 7,
+                title: "Apple-Fans Gaan Viral 🍎",
+                emoji: "🍎",
+                difficulty: "Medium",
+                description: "Je merkt dat je merk echte fans heeft die spontaan je producten aanbevelen. Ze delen videos, reviews en enthousiaste posts. Hoe zorg je dat dit groeimalmoment aanhoudt?",
+                strategyQuestion: "Wat is je beste strategie?",
+                correctStrategy: "Fanstrategie",
+                wrongStrategies: ["Ambassadeurstrategie", "Reputatiestrategie"],
+                strategyExplanation: "Echte fans zijn je beste asset. Ze zijn emotioneel verbonden en promoten uit intrinsieke motivatie. Het gaat om die emotie verdiepen.",
+                channelQuestion: "Hoe voeding je je fanbase optimaal?",
+                correctChannel: "Exclusieve content, early access tot nieuwe producten, online communities opbouwen",
+                wrongChannels: [
+                    "Ze commercialiseren en betalen voor hun promotie",
+                    "Hun posts steeds negeren en niet interacteren"
+                ]
+            },
+            {
+                id: 8,
+                title: "Crisis: Voedselvergiftiging Report 🚨",
+                emoji: "🚨",
+                difficulty: "Moeilijk",
+                description: "Een groot voedingsbedrijf wordt beschuldigd van voedselvergiftiging via een online review. Dit kan zich snel verspreiden. Je moet snel en goed reageren om reputatieschade te voorkomen.",
+                strategyQuestion: "Welke strategie is nu kritiek?",
+                correctStrategy: "Issuemanagementstrategie",
+                wrongStrategies: ["Participatiestrategie", "Veranderstrategie"],
+                strategyExplanation: "Issues moeten snel herkend en beheerd worden. Je moet het debat mee sturen met transparante communicatie en snelle actie.",
+                channelQuestion: "Via welke kanalen reageer je het best?",
+                correctChannel: "Persconferentie, transparante uitleg op website, sociale media monitoring",
+                wrongChannels: [
+                    "Het incident een week negeren en hopen dat het weggaat",
+                    "Alleen een excuus-e-mail naar één klant"
+                ]
+            },
+            {
+                id: 9,
+                title: "Werknemers Zijn Je Merkaambassadeurs 🌟",
+                emoji: "🌟",
+                difficulty: "Moeilijk",
+                description: "Je bedrijf voert een grote organisatiewijziging door naar meer duurzaamheid. Externe klanten zien dit niet als authentiek als jouw eigen werknemers het niet uitdragen. Je moet werknemers eerst intern overtuigen.",
+                strategyQuestion: "Welke strategie past hier het best?",
+                correctStrategy: "Internal Branding Strategie",
+                wrongStrategies: ["Veranderstrategie", "Ambassadeurstrategie"],
+                strategyExplanation: "Werknemers zijn jouw beste vertegenwoordigers. Zij moeten de bedrijfsmissie kennen en voelen. Alleen dan dragen ze dit authentiek uit naar buiten.",
+                channelQuestion: "Hoe maak je werknemers true believers?",
+                correctChannel: "Workshops, trainingen, intranet-communicatie, transparante gesprekken met management",
+                wrongChannels: [
+                    "Een e-mail sturen met de nieuwe visie",
+                    "Alleen het naar klanten communiceren zonder werknemers in te lichten"
+                ]
+            },
+            {
+                id: 10,
+                title: "Gemeentelijke Heraanleg Plein 🏛️",
+                emoji: "🏛️",
+                difficulty: "Moeilijk",
+                description: "Een gemeente wil een belangrijk plein heraanleggen. Er is veel weerstand van inwoners die bang zijn voor verandering. Je moet draagvlak opbouwen door inwoners echt mee te laten denken.",
+                strategyQuestion: "Welke strategie zorgt voor draagvlak?",
+                correctStrategy: "Participatiestrategie",
+                wrongStrategies: ["Issuemanagementstrategie", "Public Affairs Strategie"],
+                strategyExplanation: "Wanneer stakeholders mee inspreken, ontstaat automatisch meer draagvlak. Je geeft ze eigenaarschap over de oplossing.",
+                channelQuestion: "Hoe betrek je inwoners concreet?",
+                correctChannel: "Inspraakmomenten, workshops in buurthuizen, online enquêtes, projectgroepen met bewoners",
+                wrongChannels: [
+                    "De gemeente besluit alles in stilte en presenteert het als klaar",
+                    "Alleen lobbywerk met politici"
+                ]
+            },
+            {
+                id: 11,
+                title: "Beleidsmakers Overtuigen 🏢",
+                emoji: "🏢",
+                difficulty: "Moeilijk",
+                description: "Je werkt voor een industrie-sector. De overheid wil strenge regelgeving invoeren die slecht is voor je bedrijven. Je moet de regering overtuigen deze regelgeving aan te passen.",
+                strategyQuestion: "Welke strategie gebruiken?",
+                correctStrategy: "Public Affairs Strategie",
+                wrongStrategies: ["Ambassadeurstrategie", "Fanstrategie"],
+                strategyExplanation: "Public affairs draait om beleidsmakers en stakeholders beïnvloeden. Dit vereist gerichte netwerkevenementen en directe contacten.",
+                channelQuestion: "Met welke middelen bereik je beleidsmakers?",
+                correctChannel: "Netwerkevenementen, directe overlegmomenten, perscontacten met belangrijke journalisten",
+                wrongChannels: [
+                    "Een grote advertentiecampagne op billboards",
+                    "Een influencer inhuren om over policies te spreken"
+                ]
+            },
+            {
+                id: 12,
+                title: "Digitaal Platform Implementeren 💻",
+                emoji: "💻",
+                difficulty: "Moeilijk",
+                description: "Een school voert een volledig nieuw digitaal leerplatform in. Leerlingen, ouders en leraren zijn onzeker en angstig. Veel weerstand. Je moet ze stap voor stap meenemen.",
+                strategyQuestion: "Welke strategie is essentieel?",
+                correctStrategy: "Veranderstrategie",
+                wrongStrategies: ["Internal Branding Strategie", "Participatiestrategie"],
+                strategyExplanation: "Veranderingen creëren onzekerheid. Goede communicatie helpt weerstand te verminderen en begrip te creëren. Dit is echt veranderstrategie.",
+                channelQuestion: "Hoe begeleidt je stakeholders door deze verandering?",
+                correctChannel: "Infosessies, trainingen, aanspreekpunten/chatbots, intranet-updates, geduldig luisteren",
+                wrongChannels: [
+                    "Het platform zomaar live gaan zonder voorbereiding",
+                    "Alleen management informeren, niet leerlingen en ouders"
+                ]
+            }
+        ];
+
+        let currentCaseIndex = 0;
+        let score = 0;
+        let questionPhase = 'strategy';
+        let selectedStrategy = null;
+        let strategyCorrect = null;
+
+        function startGame() {
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            document.getElementById('totalCases').textContent = cases.length;
+            loadCase();
+        }
+
+        function loadCase() {
+            const currentCase = cases[currentCaseIndex];
+            questionPhase = 'strategy';
+            selectedStrategy = null;
+            strategyCorrect = null;
+
+            document.getElementById('caseNumber').textContent = currentCaseIndex + 1;
+            document.getElementById('caseEmoji').textContent = currentCase.emoji;
+            document.getElementById('caseTitle').textContent = currentCase.title;
+            document.getElementById('caseDescription').textContent = currentCase.description;
+            document.getElementById('difficultyBadge').textContent = currentCase.difficulty;
+            
+            const progress = ((currentCaseIndex) / cases.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            loadStrategyQuestion(currentCase);
+
+            document.getElementById('followUpContainer').style.display = 'none';
+            document.getElementById('questionContainer').style.display = 'block';
+        }
+
+        function loadStrategyQuestion(currentCase) {
+            document.getElementById('question').textContent = currentCase.strategyQuestion;
+            
+            const allOptions = [currentCase.correctStrategy, ...currentCase.wrongStrategies];
+            const shuffled = shuffleArray(allOptions);
+            
+            let optionsHTML = '';
+            shuffled.forEach((option, index) => {
+                optionsHTML += `
+                    <div class="option">
+                        <label>
+                            <input type="radio" name="strategy" value="${option}" onchange="selectStrategy('${option}')">
+                            ${option}
+                        </label>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('optionsContainer').innerHTML = optionsHTML;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('nextQuestionContainer').classList.remove('show');
+        }
+
+        function selectStrategy(strategy) {
+            selectedStrategy = strategy;
+            const currentCase = cases[currentCaseIndex];
+            const isCorrect = strategy === currentCase.correctStrategy;
+            strategyCorrect = isCorrect;
+
+            if (isCorrect) {
+                score += 2;
+            }
+
+            document.querySelectorAll('.option').forEach(option => {
+                const input = option.querySelector('input');
+                if (input.value === currentCase.correctStrategy) {
+                    option.classList.add('correct');
+                } else if (input.value === strategy && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+                input.disabled = true;
+            });
+
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.classList.add('show');
+            if (isCorrect) {
+                feedbackDiv.classList.add('correct');
+                feedbackDiv.innerHTML = `
+                    <h4>✅ Juist!</h4>
+                    <p>${currentCase.strategyExplanation}</p>
+                `;
+            } else {
+                feedbackDiv.classList.add('incorrect');
+                feedbackDiv.innerHTML = `
+                    <h4>❌ Niet juist</h4>
+                    <p><strong>Het juiste antwoord was:</strong> ${currentCase.correctStrategy}</p>
+                    <p>${currentCase.strategyExplanation}</p>
+                `;
+            }
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextQuestionContainer').classList.add('show');
+        }
+
+        function nextStep() {
+            const currentCase = cases[currentCaseIndex];
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('followUpContainer').style.display = 'block';
+            
+            loadChannelQuestion(currentCase);
+        }
+
+        function loadChannelQuestion(currentCase) {
+            document.getElementById('followUpQuestion').textContent = currentCase.channelQuestion;
+            
+            const allOptions = [currentCase.correctChannel, ...currentCase.wrongChannels];
+            const shuffled = shuffleArray(allOptions);
+            
+            let optionsHTML = '';
+            shuffled.forEach((option, index) => {
+                optionsHTML += `
+                    <div class="option">
+                        <label>
+                            <input type="radio" name="channel" value="${option}" onchange="selectChannel('${option}')">
+                            ${option}
+                        </label>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('followUpOptionsContainer').innerHTML = optionsHTML;
+            document.getElementById('followUpFeedback').innerHTML = '';
+            document.getElementById('followUpFeedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('nextCaseContainer').classList.remove('show');
+        }
+
+        function selectChannel(channel) {
+            const currentCase = cases[currentCaseIndex];
+            const isCorrect = channel === currentCase.correctChannel;
+
+            if (isCorrect) {
+                score += 2;
+            }
+
+            document.querySelectorAll('[name="channel"]').forEach(input => {
+                const optionDiv = input.closest('.option');
+                if (input.value === currentCase.correctChannel) {
+                    optionDiv.classList.add('correct');
+                } else if (input.value === channel && !isCorrect) {
+                    optionDiv.classList.add('incorrect');
+                }
+                input.disabled = true;
+            });
+
+            const feedbackDiv = document.getElementById('followUpFeedback');
+            feedbackDiv.classList.add('show');
+            if (isCorrect) {
+                feedbackDiv.classList.add('correct');
+                feedbackDiv.innerHTML = `
+                    <h4>✅ Perfect!</h4>
+                    <p>Dit communicatiemiddel sluit perfect aan bij de strategie <span class="strategy-badge">${selectedStrategy}</span></p>
+                `;
+            } else {
+                feedbackDiv.classList.add('incorrect');
+                feedbackDiv.innerHTML = `
+                    <h4>❌ Dit is niet het beste kanaal</h4>
+                    <p><strong>Het beste antwoord was:</strong> ${currentCase.correctChannel}</p>
+                `;
+            }
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextCaseContainer').classList.add('show');
+        }
+
+        function nextCase() {
+            currentCaseIndex++;
+            
+            if (currentCaseIndex < cases.length) {
+                loadCase();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('endScreen').classList.add('active');
+            
+            const totalPossibleScore = cases.length * 4;
+            const percentage = Math.round((score / totalPossibleScore) * 100);
+            
+            document.getElementById('finalScore').textContent = `${score}/${totalPossibleScore}`;
+            document.getElementById('totalScore').textContent = score;
+            document.getElementById('average').textContent = percentage;
+            
+            let message = '';
+            if (percentage === 100) {
+                message = "🏆 PERFECT! Je bent een echte PR-strategie meester!";
+            } else if (percentage >= 90) {
+                message = "🌟 Uitstekend! Je hebt alle strategieën echt begrepen!";
+            } else if (percentage >= 75) {
+                message = "👏 Goed gedaan! Je beheerst de meeste strategieën al.";
+            } else if (percentage >= 60) {
+                message = "💪 Niet slecht! Nog wat herhalen en je bent er helemaal klaar voor!";
+            } else {
+                message = "📚 Keep learning! Lees de theorie van Wil Michels nogmaals door.";
+            }
+            
+            document.getElementById('scoreMessage').textContent = message;
+        }
+
+        function resetGame() {
+            currentCaseIndex = 0;
+            score = 0;
+            questionPhase = 'strategy';
+            selectedStrategy = null;
+            strategyCorrect = null;
+            
+            document.getElementById('endScreen').classList.remove('active');
+            document.getElementById('startScreen').classList.add('active');
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+    </script>
+</body>
+</html>
